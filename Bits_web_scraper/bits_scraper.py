@@ -2,6 +2,7 @@
 
 import requests, os, bs4, re
 
+#Downloads all files from a given URL to a subfolder
 def download_files(url, path):
 
     response = requests.get(url)
@@ -60,37 +61,37 @@ def download_files(url, path):
             file.write(html)
 
 if __name__ == "__main__":
-	url = 'http://bits.usc.edu/cs104'
+  url = 'http://bits.usc.edu/cs104/'
 
-	res = requests.get(url)
-	res.raise_for_status()
+  res = requests.get(url)
+  res.raise_for_status()
 
-	# Retrieve the webpage
-	main = bs4.BeautifulSoup(res.text, "lxml")
+  # Retrieve the webpage
+  main = bs4.BeautifulSoup(res.text, "lxml")
 
-	# Create a folder with the website title
-	root_dir = main.head.title.text
-	if not os.path.exists(root_dir):
-		os.makedirs(root_dir)
-	os.chdir(root_dir)
+  # Create a folder with the website title
+  root_dir = main.head.title.text
+  if not os.path.exists(root_dir):
+    os.makedirs(root_dir)
+  os.chdir(root_dir)
 
-	print "Downloading from ", main.head.title.text.encode('utf-8')
-	# Look through the list of the main page
-	menu = main.find_all('a')
-	# Define search terms for extraction
-	linksOfIntrest = ["Labs", "Lecture Schedule", "Assignments"]
-	for index in range(len(menu)):
-		if any(s in menu[index].text for s in linksOfIntrest):
-			# Create a folder for the category
-			path = menu[index].li.string
-			if not os.path.exists(path):
-				os.makedirs(path)
-			print "Exploring ", menu[index].li.string.encode('utf-8')
-			
-			# Explore the link
-			url = menu[index].get('href')
-			download_files(url, path)
-			os.chdir('../')
-
-
-# check for encoding when dling html, create a table of content
+  print "Downloading from ", main.head.title.text.encode('utf-8')
+  # Look through the list of the main page
+  menu = main.find_all('a')
+  # Define search terms for extraction
+  linksOfIntrest = ["Labs", "Lecture Schedule", "Assignments", "Homework"]
+  for index in range(len(menu)):
+    if any(s in menu[index].text for s in linksOfIntrest):
+      # Create a folder for the category
+      try:
+        path = menu[index].li.string.replace('/', '-')
+      except AttributeError:
+        continue
+      if not os.path.exists(path):
+        os.makedirs(path)
+      print "Exploring ", menu[index].li.string.encode('utf-8')
+      
+      # Explore the link
+      url = menu[index].get('href')
+      download_files(url, path)
+      os.chdir('../')
