@@ -40,6 +40,6 @@ LUMO2 = molecule2_matrix[:,mo2_cols]
 result = 0
 for i in range(len(LUMO1)):
   for j in range(len(LUMO2)):
-    result += LUMO1[i]*LUMO2[j]*fock_matrix[i][j+k]
+    result += LUMO1[i]*LUMO2[j]*fock_matrix[i][j+len(LUMO1)]
 
 print result*627.51, "kcal"
